@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Generador de códigos QR</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f3f6fa;color:#1b2c3d;margin:0;padding:24px}
+main{max-width:850px;margin:auto;background:white;padding:26px;border-radius:18px;box-shadow:0 10px 35px #10243a18}
+h1{color:#10243a}input{width:100%;padding:13px;border:1px solid #bbc7d3;border-radius:9px;font-size:16px;margin:8px 0 14px}
+button{background:#10243a;color:white;border:0;border-radius:9px;padding:12px 18px;font-weight:bold;cursor:pointer}
+.small{color:#526273;line-height:1.55}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-top:22px}
+.qr{border:1px solid #dce3ea;border-radius:12px;padding:15px;text-align:center}.qr img{width:170px;height:170px;display:block;margin:10px auto}.qr a{display:inline-block;color:#0d527a;margin-top:8px}
+</style></head>
+<body><main>
+<h1>Generador de los 5 códigos QR</h1>
+<p class="small">Primero publica la carpeta en GitHub Pages. Luego pega aquí la dirección pública de tu página (por ejemplo: https://tuusuario.github.io/regalo-dia-hombre/). Esta herramienta generará los cinco QR definitivos.</p>
+<label for="url"><b>Dirección pública de tu página</b></label>
+<input id="url" placeholder="https://tuusuario.github.io/regalo-dia-hombre/">
+<button id="make">Generar mis 5 QR</button>
+<div id="results" class="grid"></div>
+</main>
+<script>
+const people=[["Dr. Ahmed","dr-ahmed"],["Jefe Marco Estrella","marco-estrella"],["Jefe David","jefe-david"],["Marlon","marlon"],["Stalin","stalin"]];
+document.getElementById("make").addEventListener("click",()=>{
+ const raw=document.getElementById("url").value.trim();
+ let base; try{base=new URL(raw)}catch(e){alert("Escribe una dirección web válida, comenzando con https://");return}
+ if(!/^https?:$/.test(base.protocol)){alert("La dirección debe comenzar con https://");return}
+ base.search="";
+ const root=base.href.endsWith("/")?base.href:base.href+"/";
+ const results=document.getElementById("results"); results.innerHTML="";
+ people.forEach(([name,key])=>{
+   const link=root+"?persona="+encodeURIComponent(key);
+   const qr="https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=12&data="+encodeURIComponent(link);
+   const box=document.createElement("section");box.className="qr";
+   const title=document.createElement("b");title.textContent=name;
+   const img=document.createElement("img");img.alt="Código QR para "+name;img.src=qr;
+   const a=document.createElement("a");a.href=qr;a.download="QR-"+key+".png";a.target="_blank";a.rel="noopener";a.textContent="Abrir / guardar QR";
+   const p=document.createElement("p");p.className="small";p.textContent=link;
+   box.append(title,img,a,p);results.append(box);
+ });
+});
+</script></body></html>
